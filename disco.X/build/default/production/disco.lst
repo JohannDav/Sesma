@@ -1,4 +1,4 @@
-MPASM 5.87                         DISCO.ASM   9-17-2025  10:41:29         PAGE  1
+MPASM 5.87                         DISCO.ASM   9-18-2025  17:33:12         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -57,7 +57,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00041 
                       00042 ; --- Programa Principal ---
 000A                  00043 MAIN
-MPASM 5.87                         DISCO.ASM   9-17-2025  10:41:29         PAGE  2
+MPASM 5.87                         DISCO.ASM   9-18-2025  17:33:12         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -105,7 +105,7 @@ Message[302]: Register in operand not in bank 0.  Ensure that bank bits are corr
 0025   2???           00081     GOTO    LOOP                ; Regresa al inicio del bucle para repetir la secuencia
                       00082 
 3F50                  00083     END                         ; Fin del archivo
-MPASM 5.87                         DISCO.ASM   9-17-2025  10:41:29         PAGE  3
+MPASM 5.87                         DISCO.ASM   9-18-2025  17:33:12         PAGE  3
 
 
 SYMBOL TABLE
@@ -164,7 +164,7 @@ LOOP                              0000000E
 MAIN                              0000000A
 NOT_BO                            00000000
 NOT_BOD                           00000000
-MPASM 5.87                         DISCO.ASM   9-17-2025  10:41:29         PAGE  4
+MPASM 5.87                         DISCO.ASM   9-18-2025  17:33:12         PAGE  4
 
 
 SYMBOL TABLE
@@ -223,7 +223,7 @@ SPBRG                             00000099
 SPEN                              00000007
 SREN                              00000005
 STATUS                            00000003
-MPASM 5.87                         DISCO.ASM   9-17-2025  10:41:29         PAGE  5
+MPASM 5.87                         DISCO.ASM   9-18-2025  17:33:12         PAGE  5
 
 
 SYMBOL TABLE
@@ -282,7 +282,7 @@ TX9                               00000006
 TX9D                              00000000
 TXEN                              00000005
 TXIE                              00000004
-MPASM 5.87                         DISCO.ASM   9-17-2025  10:41:29         PAGE  6
+MPASM 5.87                         DISCO.ASM   9-18-2025  17:33:12         PAGE  6
 
 
 SYMBOL TABLE
@@ -341,7 +341,7 @@ _MCLRE_OFF                        00003FDF
 _MCLRE_ON                         00003FFF
 _PWRTE_OFF                        00003FFF
 _PWRTE_ON                         00003FF7
-MPASM 5.87                         DISCO.ASM   9-17-2025  10:41:29         PAGE  7
+MPASM 5.87                         DISCO.ASM   9-18-2025  17:33:12         PAGE  7
 
 
 SYMBOL TABLE
