@@ -1,0 +1,44 @@
+MPLINK 5.09, LINKER
+Linker Map File - Created Thu Oct 02 01:06:35 2025
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000064
+                   .cinit    romdata   0x000032    program   0x000004
+.config_2007_BUILD/DEFAULT/PRODUCTION/EXAMEN_       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000033      
+                            0x002007    0x002007      
+            53 out of 2182 program addresses used, program memory utilization is 2%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    BEGIN   0x000018    program     static C:\Users\jdqg2\MPLABXProjects\Examen_1.X\examen_1.asm
+                  DELAY_1   0x000001    program     static C:\Users\jdqg2\MPLABXProjects\Examen_1.X\examen_1.asm
+               INNER_LOOP   0x000007    program     static C:\Users\jdqg2\MPLABXProjects\Examen_1.X\examen_1.asm
+                 MID_LOOP   0x000005    program     static C:\Users\jdqg2\MPLABXProjects\Examen_1.X\examen_1.asm
+               OUTER_LOOP   0x000003    program     static C:\Users\jdqg2\MPLABXProjects\Examen_1.X\examen_1.asm
+                    START   0x00000e    program     static C:\Users\jdqg2\MPLABXProjects\Examen_1.X\examen_1.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                  DELAY_1   0x000001    program     static C:\Users\jdqg2\MPLABXProjects\Examen_1.X\examen_1.asm
+               OUTER_LOOP   0x000003    program     static C:\Users\jdqg2\MPLABXProjects\Examen_1.X\examen_1.asm
+                 MID_LOOP   0x000005    program     static C:\Users\jdqg2\MPLABXProjects\Examen_1.X\examen_1.asm
+               INNER_LOOP   0x000007    program     static C:\Users\jdqg2\MPLABXProjects\Examen_1.X\examen_1.asm
+                    START   0x00000e    program     static C:\Users\jdqg2\MPLABXProjects\Examen_1.X\examen_1.asm
+                    BEGIN   0x000018    program     static C:\Users\jdqg2\MPLABXProjects\Examen_1.X\examen_1.asm
+
+
