@@ -1,0 +1,499 @@
+MPASM 5.87                      SEMAFORO.ASM   10-9-2025  17:56:01         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;Quirino Gonzalez Johann David
+                      00002 ; HEADER para el PIC16F628A, usando el oscilador RC interno a 4MHz.
+                      00003 
+                      00004 #include <p16f628a.inc>
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ; Build date : Jan 06 2020
+                      00005 ;  MPASM PIC16F628A processor include
+                      00006 ; 
+                      00007 ;  (c) Copyright 1999-2020 Microchip Technology, All rights reserved
+                      00008 ;==========================================================================
+                      00009 
+                      00386         LIST
+                      00005 
+                      00006 ;*********************************************************
+                      00007 ; EQUATES SECTION
+  00000005            00008 PORTA         EQU 0x05
+  00000006            00009 PORTB         EQU 0x06
+  00000085            00010 TRISA         EQU 0x85
+  00000086            00011 TRISB         EQU 0x86
+  00000003            00012 STATUS        EQU 0x03
+  0000001F            00013 CMCON         EQU 0x1F
+  00000020            00014 COUNT1        EQU 0x20
+  00000021            00015 COUNT2        EQU 0x21
+  00000022            00016 COUNT3        EQU 0x22
+                      00017 
+                      00018 ;*********************************************************
+                      00019 ; DIRECTIVAS DEL ENSAMBLADOR
+                      00020     LIST      P=16F628A
+                      00021     ORG       0x0000
+0000   2???           00022     GOTO      START
+                      00023 
+                      00024 ;*********************************************************
+                      00025 ; BITS DE CONFIGURACION
+2007   3F10           00026     __CONFIG _INTRC_OSC_NOCLKOUT & _WDT_OFF & _PWRTE_ON & _LVP_OFF & _MCLRE_OFF & _BOREN_OFF & _CP_OFF &
+                             _CPD_OFF
+                      00027 
+                      00028 ;*********************************************************
+                      00029 ; SUBRUTINAS DE RETARDO REALES
+                      00030 
+                      00031 ; Retardo de 0.2 SEGUNDOS (200ms para 4MHz) "DELAY_0_2"
+0001                  00032 DELAY_0_2
+0001   3002           00033     MOVLW   D'2'           ; 1 ciclo
+0002   00A2           00034     MOVWF   COUNT3         ; 1 ciclo
+0003                  00035 DELAY_0_2_OUTER
+0003   30FF           00036     MOVLW   D'255'         ; 1 ciclo  
+0004   00A1           00037     MOVWF   COUNT2         ; 1 ciclo
+0005                  00038 DELAY_0_2_MID
+0005   30A5           00039     MOVLW   D'165'         ; 1 ciclo
+0006   00A0           00040     MOVWF   COUNT1         ; 1 ciclo
+0007                  00041 DELAY_0_2_INNER
+0007   0BA0           00042     DECFSZ  COUNT1, F      ; 1 ciclo (2 cuando salta)
+MPASM 5.87                      SEMAFORO.ASM   10-9-2025  17:56:01         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0008   2???           00043     GOTO    DELAY_0_2_INNER ; 2 ciclos
+0009   0BA1           00044     DECFSZ  COUNT2, F      ; 1 ciclo (2 cuando salta)
+000A   2???           00045     GOTO    DELAY_0_2_MID  ; 2 ciclos
+000B   0BA2           00046     DECFSZ  COUNT3, F      ; 1 ciclo (2 cuando salta)
+000C   2???           00047     GOTO    DELAY_0_2_OUTER ; 2 ciclos
+000D   0008           00048     RETURN                 ; 2 ciclos
+                      00049 
+                      00050 ; Retardo de 1 SEGUNDO (REAL para 4MHz) "DELAY_1"
+000E                  00051 DELAY_1
+000E   3006           00052     MOVLW   D'6'           ; 1 ciclo
+000F   00A2           00053     MOVWF   COUNT3         ; 1 ciclo
+0010                  00054 DELAY_1_OUTER
+0010   30FF           00055     MOVLW   D'255'         ; 1 ciclo  
+0011   00A1           00056     MOVWF   COUNT2         ; 1 ciclo
+0012                  00057 DELAY_1_MID
+0012   30FF           00058     MOVLW   D'255'         ; 1 ciclo
+0013   00A0           00059     MOVWF   COUNT1         ; 1 ciclo
+0014                  00060 DELAY_1_INNER
+0014   0BA0           00061     DECFSZ  COUNT1, F      ; 1 ciclo (2 cuando salta)
+0015   2???           00062     GOTO    DELAY_1_INNER  ; 2 ciclos
+0016   0BA1           00063     DECFSZ  COUNT2, F      ; 1 ciclo (2 cuando salta)
+0017   2???           00064     GOTO    DELAY_1_MID    ; 2 ciclos
+0018   0BA2           00065     DECFSZ  COUNT3, F      ; 1 ciclo (2 cuando salta)
+0019   2???           00066     GOTO    DELAY_1_OUTER  ; 2 ciclos
+001A   0008           00067     RETURN                 ; 2 ciclos
+                      00068 
+                      00069 ; Retardo de 2 SEGUNDOS (para 4MHz) "DELAY_2"
+001B                  00070 DELAY_2
+001B   300C           00071     MOVLW   D'12'          ; 1 ciclo
+001C   00A2           00072     MOVWF   COUNT3         ; 1 ciclo
+001D                  00073 DELAY_2_OUTER
+001D   30FF           00074     MOVLW   D'255'         ; 1 ciclo  
+001E   00A1           00075     MOVWF   COUNT2         ; 1 ciclo
+001F                  00076 DELAY_2_MID
+001F   30FF           00077     MOVLW   D'255'         ; 1 ciclo
+0020   00A0           00078     MOVWF   COUNT1         ; 1 ciclo
+0021                  00079 DELAY_2_INNER
+0021   0BA0           00080     DECFSZ  COUNT1, F      ; 1 ciclo (2 cuando salta)
+0022   2???           00081     GOTO    DELAY_2_INNER  ; 2 ciclos
+0023   0BA1           00082     DECFSZ  COUNT2, F      ; 1 ciclo (2 cuando salta)
+0024   2???           00083     GOTO    DELAY_2_MID    ; 2 ciclos
+0025   0BA2           00084     DECFSZ  COUNT3, F      ; 1 ciclo (2 cuando salta)
+0026   2???           00085     GOTO    DELAY_2_OUTER  ; 2 ciclos
+0027   0008           00086     RETURN                 ; 2 ciclos
+                      00087 
+                      00088 ; Retardo de 5 SEGUNDOS (para 4MHz) "DELAY_5"
+0028                  00089 DELAY_5
+0028   301E           00090     MOVLW   D'30'          ; 1 ciclo
+0029   00A2           00091     MOVWF   COUNT3         ; 1 ciclo
+002A                  00092 DELAY_5_OUTER
+002A   30FF           00093     MOVLW   D'255'         ; 1 ciclo  
+002B   00A1           00094     MOVWF   COUNT2         ; 1 ciclo
+002C                  00095 DELAY_5_MID
+MPASM 5.87                      SEMAFORO.ASM   10-9-2025  17:56:01         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+002C   30FF           00096     MOVLW   D'255'         ; 1 ciclo
+002D   00A0           00097     MOVWF   COUNT1         ; 1 ciclo
+002E                  00098 DELAY_5_INNER
+002E   0BA0           00099     DECFSZ  COUNT1, F      ; 1 ciclo (2 cuando salta)
+002F   2???           00100     GOTO    DELAY_5_INNER  ; 2 ciclos
+0030   0BA1           00101     DECFSZ  COUNT2, F      ; 1 ciclo (2 cuando salta)
+0031   2???           00102     GOTO    DELAY_5_MID    ; 2 ciclos
+0032   0BA2           00103     DECFSZ  COUNT3, F      ; 1 ciclo (2 cuando salta)
+0033   2???           00104     GOTO    DELAY_5_OUTER  ; 2 ciclos
+0034   0008           00105     RETURN                 ; 2 ciclos
+                      00106 
+                      00107 ;*********************************************************
+                      00108 ; SECCION DE CONFIGURACION
+0035                  00109 START
+0035   1683           00110     BSF     STATUS, RP0     ; Bank 1
+0036   3000           00111     MOVLW   B'00000000'     ; PORTA como salidas
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0037   0085           00112     MOVWF   TRISA
+0038   3000           00113     MOVLW   B'00000000'     ; PORTB como salidas  
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0039   0086           00114     MOVWF   TRISB
+003A   1283           00115     BCF     STATUS, RP0     ; Bank 0
+                      00116     
+003B   3007           00117     MOVLW   0x07
+003C   009F           00118     MOVWF   CMCON           ; Deshabilitar comparadores
+                      00119     
+003D   0185           00120     CLRF    PORTA
+003E   0186           00121     CLRF    PORTB
+                      00122 
+                      00123 ;*********************************************************
+                      00124 ; PROGRAMA PRINCIPAL
+003F                  00125 BEGIN
+                      00126     ; Retardo de 0.2 SEGUNDOS (200ms para 4MHz) "DELAY_0_2"
+                      00127     ; Retardo de 1 SEGUNDO (REAL para 4MHz) "DELAY_1"
+                      00128     ; Retardo de 2 SEGUNDOS (para 4MHz) "DELAY_2"
+                      00129     ; Retardo de 5 SEGUNDOS (para 4MHz) "DELAY_5"
+                      00130     
+003F   1486           00131     BSF PORTB,1     ; Enciende el verde de 1
+0040   1606           00132     BSF PORTB,4     ; Enciende el rojo de 2
+0041   2???           00133     CALL DELAY_2    ; Espera dos sefundos
+                      00134     
+                      00135                     ; Empieza el parpadedo del verde de 1
+0042   1086           00136     BCF PORTB,1     ; Apaga el verde de 1
+0043   2???           00137     CALL DELAY_0_2  ; Espera .2 seg
+0044   2???           00138     CALL DELAY_0_2  ; Espera .2 seg
+                      00139     
+0045   1486           00140     BSF PORTB,1     ; Prende el Verde de 1
+0046   2???           00141     CALL DELAY_0_2  ; Espera .2 seg
+0047   2???           00142     CALL DELAY_0_2  ; Espera .2 seg
+                      00143     
+0048   1086           00144     BCF PORTB,1     ; Apaga el verde de 1
+0049   2???           00145     CALL DELAY_0_2  ; Espera .2 seg
+004A   2???           00146     CALL DELAY_0_2  ; Espera .2 seg
+MPASM 5.87                      SEMAFORO.ASM   10-9-2025  17:56:01         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00147     
+004B   1486           00148     BSF PORTB,1     ; Prende el Verde de 1
+004C   2???           00149     CALL DELAY_0_2  ; Espera .2 seg
+004D   2???           00150     CALL DELAY_0_2  ; Espera .2 seg
+                      00151     
+004E   1086           00152     BCF PORTB,1     ; Apaga el verde de 1 y TERMINA PARPADEO DE VERDE 1
+004F   1506           00153     BSF PORTB,2     ; Enciende naranja de 1
+0050   2???           00154     CALL DELAY_1    ; Espera 1 seg
+                      00155     
+0051   1106           00156     BCF PORTB,2     ; Apaga el naranja de 1
+0052   1586           00157     BSF PORTB,3     ; Enciende el rojo de 1
+0053   1206           00158     BCF PORTB,4     ; Apaga el rojo de 2
+0054   1706           00159     BSF PORTB,6     ; Enciende el verde de 2
+0055   2???           00160     CALL DELAY_2    ; Espera 2 segundos
+                      00161     
+                      00162                     ; EMPIEZA EL PARPADEO DE VERDE 2
+0056   1306           00163     BCF PORTB,6     ; Apaga verde 2
+0057   2???           00164     CALL DELAY_0_2  ; Espera .2 seg
+0058   2???           00165     CALL DELAY_0_2  ; Espera .2 seg
+                      00166     
+0059   1706           00167     BSF PORTB,6     ; Enciende el verde 2
+005A   2???           00168     CALL DELAY_0_2  ; Espera .2 seg
+005B   2???           00169     CALL DELAY_0_2  ; Espera .2 seg
+                      00170     
+005C   1306           00171     BCF PORTB,6     ; Apaga verde 2
+005D   2???           00172     CALL DELAY_0_2  ; Espera .2 seg
+005E   2???           00173     CALL DELAY_0_2  ; Espera .2 seg
+                      00174     
+005F   1706           00175     BSF PORTB,6     ; Enciende el verde 2
+0060   2???           00176     CALL DELAY_0_2  ; Espera .2 seg
+0061   2???           00177     CALL DELAY_0_2  ; Espera .2 seg
+                      00178     
+0062   1306           00179     BCF PORTB,6     ; Apaga verde 2 Y TERMINA EL PARPADEO de verde 2
+0063   1686           00180     BSF PORTB,5     ; Enciende el naranja de 2
+0064   2???           00181     CALL DELAY_1    ; Espera 1 segundo
+                      00182     
+0065   1286           00183     BCF PORTB,5     ; Apaga el naranja de 2
+0066   1606           00184     BSF PORTB,4     ; Enciende el rojo de 2
+0067   1186           00185     BCF PORTB,3     ; Apaga el rojo de 1
+                      00186     
+0068   2???           00187     GOTO    BEGIN           ; Repite el ciclo    
+3F10                  00188     END
+MPASM 5.87                      SEMAFORO.ASM   10-9-2025  17:56:01         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADDEN                             00000003
+ADEN                              00000003
+BEGIN                             0000003F
+BRGH                              00000002
+C                                 00000000
+C1INV                             00000004
+C1OUT                             00000006
+C2INV                             00000005
+C2OUT                             00000007
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCPR1                             00000015
+CCPR1H                            00000016
+CCPR1L                            00000015
+CIS                               00000003
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             0000001F
+CMIE                              00000006
+CMIF                              00000006
+COUNT1                            00000020
+COUNT2                            00000021
+COUNT3                            00000022
+CREN                              00000004
+CSRC                              00000007
+DATA_CP_OFF                       00003FFF
+DATA_CP_ON                        00003EFF
+DC                                00000001
+DELAY_0_2                         00000001
+DELAY_0_2_INNER                   00000007
+DELAY_0_2_MID                     00000005
+DELAY_0_2_OUTER                   00000003
+DELAY_1                           0000000E
+DELAY_1_INNER                     00000014
+DELAY_1_MID                       00000012
+DELAY_1_OUTER                     00000010
+DELAY_2                           0000001B
+DELAY_2_INNER                     00000021
+DELAY_2_MID                       0000001F
+DELAY_2_OUTER                     0000001D
+DELAY_5                           00000028
+DELAY_5_INNER                     0000002E
+DELAY_5_MID                       0000002C
+DELAY_5_OUTER                     0000002A
+EEADR                             0000009B
+MPASM 5.87                      SEMAFORO.ASM   10-9-2025  17:56:01         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+EECON1                            0000009C
+EECON2                            0000009D
+EEDATA                            0000009A
+EEIE                              00000007
+EEIF                              00000007
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GIE                               00000007
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_BO                            00000000
+NOT_BOD                           00000000
+NOT_BOR                           00000000
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+OERR                              00000001
+OPTION_REG                        00000081
+OSCF                              00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PORTA                             00000005
+PORTB                             00000006
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RA6                               00000006
+RA7                               00000007
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+MPASM 5.87                      SEMAFORO.ASM   10-9-2025  17:56:01         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+RX9                               00000006
+RX9D                              00000000
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+START                             00000035
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1OSCEN                           00000003
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+MPASM 5.87                      SEMAFORO.ASM   10-9-2025  17:56:01         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TRISA4                            00000004
+TRISA5                            00000005
+TRISA6                            00000006
+TRISA7                            00000007
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+TRMT                              00000001
+TX9                               00000006
+TX9D                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+VR0                               00000000
+VR1                               00000001
+VR2                               00000002
+VR3                               00000003
+VRCON                             0000009F
+VREN                              00000007
+VROE                              00000006
+VRR                               00000005
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_OFF                           00003FFF
+_CP_ON                            00001FFF
+_DEVID1                           00002006
+_ER_OSC_CLKOUT                    00003FFF
+_ER_OSC_NOCLKOUT                  00003FFE
+_EXTCLK_OSC                       00003FEF
+_FOSC_ECIO                        00003FEF
+_FOSC_EXTRCCLK                    00003FFF
+_FOSC_EXTRCIO                     00003FFE
+_FOSC_HS                          00003FEE
+_FOSC_INTOSCCLK                   00003FFD
+_FOSC_INTOSCIO                    00003FFC
+MPASM 5.87                      SEMAFORO.ASM   10-9-2025  17:56:01         PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_FOSC_LP                          00003FEC
+_FOSC_XT                          00003FED
+_HS_OSC                           00003FEE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_INTOSC_OSC_CLKOUT                00003FFD
+_INTOSC_OSC_NOCLKOUT              00003FFC
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FEC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_MCLRE_OFF                        00003FDF
+_MCLRE_ON                         00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC_CLKOUT                    00003FFF
+_RC_OSC_NOCLKOUT                  00003FFE
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FED
+__16F628A                         00000001
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     2 reported,     0 suppressed
+
+
