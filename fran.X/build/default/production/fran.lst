@@ -1,13 +1,12 @@
-MPASM 5.87                    ENCABEZADO.ASM   10-5-2025  16:46:35         PAGE  1
+MPASM 5.87                          FRAN.ASM   10-8-2025  9:24:28         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00001 ;Quirino Gonzalez Johann David
-                      00002 ; HEADER para el PIC16F628A, usando el oscilador RC interno a 4MHz.
-                      00003 
-                      00004 #include <p16f628a.inc>
+                      00001 
+                      00002     LIST        P=16F628A       ; Define el procesador
+                      00003     #INCLUDE    <P16F628A.INC>    ; Incluye las definiciones estándar
                       00001         LIST
                       00002 
                       00003 ;==========================================================================
@@ -18,113 +17,89 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00008 ;==========================================================================
                       00009 
                       00386         LIST
-                      00005 
-                      00006 ;*********************************************************
-                      00007 ; EQUATES SECTION
-  00000005            00008 PORTA         EQU 0x05
-  00000006            00009 PORTB         EQU 0x06
-  00000085            00010 TRISA         EQU 0x85
-  00000086            00011 TRISB         EQU 0x86
-  00000003            00012 STATUS        EQU 0x03
-  0000001F            00013 CMCON         EQU 0x1F
-  00000020            00014 COUNT1        EQU 0x20
-  00000021            00015 COUNT2        EQU 0x21
-  00000022            00016 COUNT3        EQU 0x22
-                      00017 
-                      00018 ;*********************************************************
-                      00019 ; DIRECTIVAS DEL ENSAMBLADOR
-                      00020     LIST      P=16F628A
-                      00021     ORG       0x0000
-0000   2???           00022     GOTO      START
-                      00023 
-                      00024 ;*********************************************************
-                      00025 ; BITS DE CONFIGURACION
-2007   3F10           00026     __CONFIG _INTRC_OSC_NOCLKOUT & _WDT_OFF & _PWRTE_ON & _LVP_OFF & _MCLRE_OFF & _BOREN_OFF & _CP_OFF &
-                             _CPD_OFF
-                      00027 
-                      00028 ;*********************************************************
-                      00029 ; SUBRUTINAS DE RETARDO REALES
-                      00030 
-                      00031 ; Retardo de 1 SEGUNDO (REAL para 4MHz)
-0001                  00032 DELAY_1
-0001   3006           00033     MOVLW   D'6'           ; 1 ciclo
-0002   00A2           00034     MOVWF   COUNT3         ; 1 ciclo
-0003                  00035 OUTER_LOOP
-0003   30FF           00036     MOVLW   D'255'         ; 1 ciclo  
-0004   00A1           00037     MOVWF   COUNT2         ; 1 ciclo
-0005                  00038 MID_LOOP
-0005   30FF           00039     MOVLW   D'255'         ; 1 ciclo
-0006   00A0           00040     MOVWF   COUNT1         ; 1 ciclo
-0007                  00041 INNER_LOOP
-0007   0BA0           00042     DECFSZ  COUNT1, F      ; 1 ciclo (2 cuando salta)
-MPASM 5.87                    ENCABEZADO.ASM   10-5-2025  16:46:35         PAGE  2
+                      00004 
+                      00005 ;--- CONFIGURACIÓN PARA OSCILADOR INTERNO ---
+2007   3F18           00006     __CONFIG    _FOSC_INTOSCIO & _WDTE_OFF & _PWRTE_OFF & _MCLRE_OFF & _BOREN_OFF & _LVP_OFF & _CP_OFF
+                      00007 
+                      00008 ;--- VARIABLES PARA EL RETARDO DE 1 SEGUNDO ---
+                      00009     CBLOCK  0x20
+  00000020            00010         count1      ; Contador para el bucle más interno del retardo
+  00000021            00011         count2      ; Contador para el bucle medio
+  00000022            00012         count3      ; Contador para el bucle externo
+                      00013     ENDC
+                      00014 
+                      00015 ;--- VECTOR DE RESET ---
+                      00016     ORG     0x00
+0000   2???           00017     GOTO    Inicio
+                      00018 
+                      00019 ;--- PROGRAMA PRINCIPAL ---
+0001                  00020 Inicio:
+                      00021     ; --- Configuración de puertos ---
+0001   1683 1303      00022     BANKSEL TRISB           ; Sube al Banco 1
+0003   3081           00023     MOVLW   b'10000001'     ; Configura RB1,2,3,4,5,6 como SALIDAS (0)
+                      00024                             ; y RB0, RB7 como ENTRADAS (1) por seguridad.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0004   0086           00025     MOVWF   TRISB           ; Escribe la configuración en TRISB
+                      00026 
+                      00027     ; --- Regresamos al Banco 0 para el resto ---
+0005   1283 1303      00028     BANKSEL PORTB           ; Baja al Banco 0
+0007   3007           00029     MOVLW   0x07            ; Carga el valor para desactivar comparadores
+0008   009F           00030     MOVWF   CMCON           ; Escribe en CMCON
+0009   0186           00031     CLRF    PORTB           ; Apaga todos los LEDs al iniciar
+                      00032 
+000A                  00033 Principal:
+                      00034     ; --- PRIMERA SECUENCIA: Retardo de 1 segundo ---
+000A   307E           00035     MOVLW   b'01111110'     ; Patrón para encender los 6 LEDs (RB1 a RB6)
+000B   0086           00036     MOVWF   PORTB           ; Enciende los LEDs
+000C   0186           00037     CLRF    PORTB           ; Apaga los LEDs inmediatamente
+000D   2???           00038     CALL    Retardo_1_Segundo ; Llama a la pausa de 1 segundo
+                      00039 
+                      00040     ; --- SEGUNDA SECUENCIA: Retardo de 2 segundos ---
+000E   307E           00041     MOVLW   b'01111110'     ; Mismo patrón de encendido
+000F   0086           00042     MOVWF   PORTB           ; Enciende los LEDs
+MPASM 5.87                          FRAN.ASM   10-8-2025  9:24:28         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0008   2???           00043     GOTO    INNER_LOOP     ; 2 ciclos
-0009   0BA1           00044     DECFSZ  COUNT2, F      ; 1 ciclo (2 cuando salta)
-000A   2???           00045     GOTO    MID_LOOP       ; 2 ciclos
-000B   0BA2           00046     DECFSZ  COUNT3, F      ; 1 ciclo (2 cuando salta)
-000C   2???           00047     GOTO    OUTER_LOOP     ; 2 ciclos
-000D   0008           00048     RETURN                 ; 2 ciclos
-                      00049 
-                      00050 ;*********************************************************
-                      00051 ; SECCION DE CONFIGURACION
-000E                  00052 START
-000E   1683           00053     BSF     STATUS, RP0     ; Bank 1
-000F   3000           00054     MOVLW   B'00000000'     ; PORTA como salidas
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0010   0085           00055     MOVWF   TRISA
-0011   3000           00056     MOVLW   B'00000000'     ; PORTB como salidas  
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0012   0086           00057     MOVWF   TRISB
-0013   1283           00058     BCF     STATUS, RP0     ; Bank 0
-                      00059     
-0014   3007           00060     MOVLW   0x07
-0015   009F           00061     MOVWF   CMCON           ; Deshabilitar comparadores
-                      00062     
-0016   0185           00063     CLRF    PORTA
-0017   0186           00064     CLRF    PORTB
-                      00065 
-                      00066 ;*********************************************************
-                      00067 ; PROGRAMA PRINCIPAL
-0018                  00068 BEGIN
-0018   1486           00069     BSF     PORTB,1         ; Enciende el LED en el pin RB0
-0019   2???           00070     CALL    DELAY_1         ; Espera 1 segundo (REAL)
-001A   1086           00071     BCF     PORTB,1         ; Apaga el LED en el pin RB0
-001B   1506           00072     BSF     PORTB,2         ; Enciende el LED 2
-001C   2???           00073     CALL    DELAY_1         ; Espera 1 segundo (REAL)
-001D   2???           00074     CALL    DELAY_1         ; Espera otro segundo
-001E   1106           00075     BCF     PORTB,2         ; Apaga led 2
-001F   1586           00076     BSF     PORTB,3         ; Enciende LED 3
-0020   2???           00077     CALL    DELAY_1         ; Espera 1 seg
-0021   2???           00078     CALL    DELAY_1         ; Espera 1 seg
-0022   2???           00079     CALL    DELAY_1         ; Espera 1 seg
-0023   1186           00080     BCF     PORTB,3         ; Apaga LED 3
-0024   1606           00081     BSF     PORTB,4         ; Enciende LED 4
-0025   2???           00082     CALL    DELAY_1         ; Espera 1 seg
-0026   2???           00083     CALL    DELAY_1         ; Espera 1 seg
-0027   2???           00084     CALL    DELAY_1         ; Espera 1 seg
-0028   2???           00085     CALL    DELAY_1         ; Espera 1 seg
-0029   1206           00086     BCF     PORTB,4         ; Apaga LED 4
-002A   1686           00087     BSF     PORTB,5         ; Enciende LED 5
-002B   2???           00088     CALL    DELAY_1         ; Espera 1 seg
-002C   1286           00089     BCF     PORTB,5         ; Apaga LED 5
-002D   1706           00090     BSF     PORTB,6         ; Enciende LED 6
-002E   2???           00091     CALL    DELAY_1         ; Espera 1 seg
-002F   1306           00092     BCF     PORTB,6         ; Apaga LED 6
-0030   2???           00093     CALL    DELAY_1         ; Espera 1 seg
-MPASM 5.87                    ENCABEZADO.ASM   10-5-2025  16:46:35         PAGE  3
-
-
-LOC  OBJECT CODE     LINE SOURCE TEXT
-  VALUE
-
-0031   2???           00094     GOTO    BEGIN           ; Repite el ciclo    
-3F10                  00095     END
-MPASM 5.87                    ENCABEZADO.ASM   10-5-2025  16:46:35         PAGE  4
+0010   0186           00043     CLRF    PORTB           ; Apaga los LEDs inmediatamente
+0011   2???           00044     CALL    Retardo_1_Segundo ; Llama a la pausa de 1 segundo (1)
+0012   2???           00045     CALL    Retardo_1_Segundo ; Llama a la pausa de 1 segundo (2) -> Total 2 segundos
+                      00046 
+                      00047     ; --- TERCERA SECUENCIA: Retardo de 4 segundos ---
+0013   307E           00048     MOVLW   b'01111110'     ; Mismo patrón de encendido
+0014   0086           00049     MOVWF   PORTB           ; Enciende los LEDs
+0015   0186           00050     CLRF    PORTB           ; Apaga los LEDs inmediatamente
+0016   2???           00051     CALL    Retardo_1_Segundo ; Llama a la pausa de 1 segundo (1)
+0017   2???           00052     CALL    Retardo_1_Segundo ; Llama a la pausa de 1 segundo (2)
+0018   2???           00053     CALL    Retardo_1_Segundo ; Llama a la pausa de 1 segundo (3)
+0019   2???           00054     CALL    Retardo_1_Segundo ; Llama a la pausa de 1 segundo (4) -> Total 4 segundos
+                      00055 
+001A   2???           00056     GOTO    Principal       ; Vuelve al inicio para repetir el ciclo completo
+                      00057 
+                      00058 ;--- SUBRUTINA DE RETARDO DE ~1 SEGUNDO ---
+                      00059 ; (Idéntica a la del programa anterior)
+001B                  00060 Retardo_1_Segundo:
+001B   300A           00061     MOVLW   d'10'
+001C   00A2           00062     MOVWF   count3
+001D                  00063 Bucle_Externo:
+001D   30FA           00064     MOVLW   d'250'
+001E   00A1           00065     MOVWF   count2
+001F                  00066 Bucle_Medio:
+001F   30C8           00067     MOVLW   d'200'
+0020   00A0           00068     MOVWF   count1
+0021                  00069 Bucle_Interno:
+0021   0BA0           00070     DECFSZ  count1, F
+0022   2???           00071     GOTO    Bucle_Interno
+0023   0BA1           00072     DECFSZ  count2, F
+0024   2???           00073     GOTO    Bucle_Medio
+0025   0BA2           00074     DECFSZ  count3, F
+0026   2???           00075     GOTO    Bucle_Externo
+0027   0008           00076     RETURN
+                      00077 
+3F18                  00078     END                     ; Fin del programa
+MPASM 5.87                          FRAN.ASM   10-8-2025  9:24:28         PAGE  3
 
 
 SYMBOL TABLE
@@ -132,8 +107,10 @@ SYMBOL TABLE
 
 ADDEN                             00000003
 ADEN                              00000003
-BEGIN                             00000018
 BRGH                              00000002
+Bucle_Externo                     0000001D
+Bucle_Interno                     00000021
+Bucle_Medio                       0000001F
 C                                 00000000
 C1INV                             00000004
 C1OUT                             00000006
@@ -158,15 +135,11 @@ CM2                               00000002
 CMCON                             0000001F
 CMIE                              00000006
 CMIF                              00000006
-COUNT1                            00000020
-COUNT2                            00000021
-COUNT3                            00000022
 CREN                              00000004
 CSRC                              00000007
 DATA_CP_OFF                       00003FFF
 DATA_CP_ON                        00003EFF
 DC                                00000001
-DELAY_1                           00000001
 EEADR                             0000009B
 EECON1                            0000009C
 EECON2                            0000009D
@@ -178,20 +151,19 @@ FERR                              00000002
 FSR                               00000004
 GIE                               00000007
 INDF                              00000000
-INNER_LOOP                        00000007
 INTCON                            0000000B
 INTE                              00000004
 INTEDG                            00000006
 INTF                              00000001
-MPASM 5.87                    ENCABEZADO.ASM   10-5-2025  16:46:35         PAGE  5
+IRP                               00000007
+Inicio                            00000001
+NOT_BO                            00000000
+MPASM 5.87                          FRAN.ASM   10-8-2025  9:24:28         PAGE  4
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
-IRP                               00000007
-MID_LOOP                          00000005
-NOT_BO                            00000000
 NOT_BOD                           00000000
 NOT_BOR                           00000000
 NOT_PD                            00000003
@@ -202,7 +174,6 @@ NOT_TO                            00000004
 OERR                              00000001
 OPTION_REG                        00000081
 OSCF                              00000003
-OUTER_LOOP                        00000003
 PCL                               00000002
 PCLATH                            0000000A
 PCON                              0000008E
@@ -216,6 +187,7 @@ PS0                               00000000
 PS1                               00000001
 PS2                               00000002
 PSA                               00000003
+Principal                         0000000A
 RA0                               00000000
 RA1                               00000001
 RA2                               00000002
@@ -242,17 +214,17 @@ RD                                00000000
 RP0                               00000005
 RP1                               00000006
 RX9                               00000006
-MPASM 5.87                    ENCABEZADO.ASM   10-5-2025  16:46:35         PAGE  6
+RX9D                              00000000
+Retardo_1_Segundo                 0000001B
+SPBRG                             00000099
+MPASM 5.87                          FRAN.ASM   10-8-2025  9:24:28         PAGE  5
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
-RX9D                              00000000
-SPBRG                             00000099
 SPEN                              00000007
 SREN                              00000005
-START                             0000000E
 STATUS                            00000003
 SYNC                              00000004
 T0CS                              00000005
@@ -301,15 +273,15 @@ TRISB3                            00000003
 TRISB4                            00000004
 TRISB5                            00000005
 TRISB6                            00000006
-MPASM 5.87                    ENCABEZADO.ASM   10-5-2025  16:46:35         PAGE  7
+TRISB7                            00000007
+TRMT                              00000001
+TX9                               00000006
+MPASM 5.87                          FRAN.ASM   10-8-2025  9:24:28         PAGE  6
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
-TRISB7                            00000007
-TRMT                              00000001
-TX9                               00000006
 TX9D                              00000000
 TXEN                              00000005
 TXIE                              00000004
@@ -360,15 +332,15 @@ _INTOSC_OSC_NOCLKOUT              00003FFC
 _INTRC_OSC_CLKOUT                 00003FFD
 _INTRC_OSC_NOCLKOUT               00003FFC
 _LP_OSC                           00003FEC
-MPASM 5.87                    ENCABEZADO.ASM   10-5-2025  16:46:35         PAGE  8
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_MCLRE_OFF                        00003FDF
+MPASM 5.87                          FRAN.ASM   10-8-2025  9:24:28         PAGE  7
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
-_LVP_OFF                          00003F7F
-_LVP_ON                           00003FFF
-_MCLRE_OFF                        00003FDF
 _MCLRE_ON                         00003FFF
 _PWRTE_OFF                        00003FFF
 _PWRTE_ON                         00003FF7
@@ -380,9 +352,12 @@ _WDT_OFF                          00003FFB
 _WDT_ON                           00003FFF
 _XT_OSC                           00003FED
 __16F628A                         00000001
+count1                            00000020
+count2                            00000021
+count3                            00000022
 
 Errors   :     0
 Warnings :     0 reported,     0 suppressed
-Messages :     2 reported,     0 suppressed
+Messages :     1 reported,     0 suppressed
 
 

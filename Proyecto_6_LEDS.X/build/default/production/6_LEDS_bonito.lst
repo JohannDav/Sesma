@@ -1,4 +1,4 @@
-MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:52:14         PAGE  1
+MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:57:18         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -57,7 +57,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0006   00A0           00040     MOVWF   COUNT1         ; 1 ciclo
 0007                  00041 INNER_LOOP
 0007   0BA0           00042     DECFSZ  COUNT1, F      ; 1 ciclo (2 cuando salta)
-MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:52:14         PAGE  2
+MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:57:18         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -116,7 +116,7 @@ Message[302]: Register in operand not in bank 0.  Ensure that bank bits are corr
 002E   2???           00091     CALL    DELAY_1         ; Espera otro segundo
 002F   1286           00092     BCF     PORTB,5         ; Apaga LED 5
 0030   1706           00093     BSF     PORTB,6         ; Enciende LED 6
-MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:52:14         PAGE  3
+MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:57:18         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -128,7 +128,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0034   2???           00097     CALL    DELAY_1         ; Espera 1 seg
 0035   2???           00098     GOTO    BEGIN           ; Repite el ciclo    
 3F10                  00099     END
-MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:52:14         PAGE  4
+MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:57:18         PAGE  4
 
 
 SYMBOL TABLE
@@ -187,7 +187,7 @@ INTCON                            0000000B
 INTE                              00000004
 INTEDG                            00000006
 INTF                              00000001
-MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:52:14         PAGE  5
+MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:57:18         PAGE  5
 
 
 SYMBOL TABLE
@@ -246,7 +246,7 @@ RD                                00000000
 RP0                               00000005
 RP1                               00000006
 RX9                               00000006
-MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:52:14         PAGE  6
+MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:57:18         PAGE  6
 
 
 SYMBOL TABLE
@@ -305,7 +305,7 @@ TRISB3                            00000003
 TRISB4                            00000004
 TRISB5                            00000005
 TRISB6                            00000006
-MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:52:14         PAGE  7
+MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:57:18         PAGE  7
 
 
 SYMBOL TABLE
@@ -364,7 +364,7 @@ _INTOSC_OSC_NOCLKOUT              00003FFC
 _INTRC_OSC_CLKOUT                 00003FFD
 _INTRC_OSC_NOCLKOUT               00003FFC
 _LP_OSC                           00003FEC
-MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:52:14         PAGE  8
+MPASM 5.87                 6_LEDS_BONITO.ASM   10-2-2025  0:57:18         PAGE  8
 
 
 SYMBOL TABLE

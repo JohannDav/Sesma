@@ -1,0 +1,44 @@
+MPLINK 5.09, LINKER
+Linker Map File - Created Wed Oct 08 09:24:29 2025
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000050
+                   .cinit    romdata   0x000028    program   0x000004
+.config_2007_BUILD/DEFAULT/PRODUCTION/FRAN.O       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000029      
+                            0x002007    0x002007      
+            43 out of 2182 program addresses used, program memory utilization is 1%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+            Bucle_Externo   0x00001d    program     static C:\Users\jdqg2\MPLABXProjects\fran.X\fran.asm
+            Bucle_Interno   0x000021    program     static C:\Users\jdqg2\MPLABXProjects\fran.X\fran.asm
+              Bucle_Medio   0x00001f    program     static C:\Users\jdqg2\MPLABXProjects\fran.X\fran.asm
+                   Inicio   0x000001    program     static C:\Users\jdqg2\MPLABXProjects\fran.X\fran.asm
+                Principal   0x00000a    program     static C:\Users\jdqg2\MPLABXProjects\fran.X\fran.asm
+        Retardo_1_Segundo   0x00001b    program     static C:\Users\jdqg2\MPLABXProjects\fran.X\fran.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                   Inicio   0x000001    program     static C:\Users\jdqg2\MPLABXProjects\fran.X\fran.asm
+                Principal   0x00000a    program     static C:\Users\jdqg2\MPLABXProjects\fran.X\fran.asm
+        Retardo_1_Segundo   0x00001b    program     static C:\Users\jdqg2\MPLABXProjects\fran.X\fran.asm
+            Bucle_Externo   0x00001d    program     static C:\Users\jdqg2\MPLABXProjects\fran.X\fran.asm
+              Bucle_Medio   0x00001f    program     static C:\Users\jdqg2\MPLABXProjects\fran.X\fran.asm
+            Bucle_Interno   0x000021    program     static C:\Users\jdqg2\MPLABXProjects\fran.X\fran.asm
+
+

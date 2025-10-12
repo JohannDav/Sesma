@@ -1,0 +1,180 @@
+MPASM 5.87                     FLASH_LED.ASM   9-27-2025  15:09:41         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; FLASH_RC.ASM - Parpadeo de LED para PIC16F628A
+                      00002 ; Este programa enciende y apaga un LED conectado a PORTB,0 a intervalos de 0.5 segundos.
+                      00003 ; Usa el oscilador interno del PIC16F628A a 37kHz.
+                      00004 
+                      00005 ; ==============================================================================
+                      00006 ; SECCIÓN DE EQUATES (Declaración de registros y variables)
+                      00007 ; ==============================================================================
+  00000001            00008 TMRO            EQU     1
+  00000001            00009 OPTION_R        EQU     1
+  00000005            00010 PORTA           EQU     5
+  00000006            00011 PORTB           EQU     6
+  00000005            00012 TRISA           EQU     5
+  00000006            00013 TRISB           EQU     6
+  00000003            00014 STATUS          EQU     3
+  00000002            00015 ZEROBIT         EQU     2
+  00000000            00016 CARRY           EQU     0
+  0000001B            00017 EEADR           EQU     1BH
+  0000001A            00018 EEDATA          EQU     1AH
+  0000001C            00019 EECON1          EQU     1CH
+  0000001D            00020 EECON2          EQU     1DH
+  00000000            00021 RD              EQU     0
+  00000001            00022 WR              EQU     1
+  00000002            00023 WREN            EQU     2
+  0000000E            00024 PCON            EQU     0EH
+  00000020            00025 COUNT           EQU     20H
+                      00026 
+                      00027 ; ==============================================================================
+                      00028 ; LISTADO Y ORGANIZACIÓN DEL PROGRAMA
+                      00029 ; ==============================================================================
+Warning[205]: Found directive in column 1. (LIST)
+                      00030 LIST    P=16F628A               ; Declaramos el microcontrolador a usar
+Warning[205]: Found directive in column 1. (ORG)
+                      00031 ORG     0                       ; La dirección de inicio del programa es 0
+Warning[203]: Found opcode in column 1. (GOTO)
+0000   2???           00032 GOTO    START                   ; Salta a la sección de configuración
+                      00033 
+                      00034 ; ==============================================================================
+                      00035 ; BITS DE CONFIGURACIÓN
+                      00036 ; ==============================================================================
+                      00037 ; Configura el oscilador interno, desactiva el Watchdog Timer, y habilita el Power Up Timer.
+Warning[205]: Found directive in column 1. (__CONFIG)
+2007   3F10           00038 __CONFIG H'3F10' 
+                      00039 
+                      00040 ; ==============================================================================
+                      00041 ; SECCIÓN DE SUBRUTINAS
+                      00042 ; ==============================================================================
+                      00043 ; Subrutina de retardo de 0.1 segundos
+0001   0181           00044 DELAYP1 CLRF    TMRO            ; Inicia el temporizador 0
+0002   0801           00045 LOOPA   MOVF    TMRO,W          ; Mueve el valor del temporizador a W
+Warning[203]: Found opcode in column 1. (SUBLW)
+0003   3C1D           00046 SUBLW   .29                     ; Resta 29 a W
+Warning[203]: Found opcode in column 1. (BTFSS)
+0004   1D03           00047 BTFSS   STATUS,ZEROBIT          ; Si el resultado es cero (TMRO = 29), salta
+MPASM 5.87                     FLASH_LED.ASM   9-27-2025  15:09:41         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[203]: Found opcode in column 1. (GOTO)
+0005   2???           00048 GOTO    LOOPA                   ; Si no, repite el bucle
+Warning[203]: Found opcode in column 1. (RETLW)
+0006   3400           00049 RETLW   0                       ; Regresa (cuando TMRO llegó a 29)
+                      00050 
+                      00051 ; Subrutina de retardo de 0.5 segundos
+0007   3005           00052 DELAYP5 MOVLW   5               ; Carga el valor 5 en W
+Warning[203]: Found opcode in column 1. (MOVWF)
+0008   00A0           00053 MOVWF   COUNT                   ; Mueve W a la variable COUNT
+0009   2???           00054 LOOPB   CALL    DELAYP1         ; Llama a la subrutina de 0.1s
+Warning[203]: Found opcode in column 1. (DECFSZ)
+Message[305]: Using default destination of 1 (file).
+000A   0BA0           00055 DECFSZ  COUNT                   ; Decrementa COUNT y salta si llega a 0
+Warning[203]: Found opcode in column 1. (GOTO)
+000B   2???           00056 GOTO    LOOPB                   ; Si no ha llegado a 0, repite el bucle
+Warning[203]: Found opcode in column 1. (RETLW)
+000C   3400           00057 RETLW   0                       ; Regresa
+                      00058 
+                      00059 ; Subrutina de retardo de 1 segundo
+000D   3010           00060 DELAY1  MOVLW   10              ; Carga el valor 10 en W
+Warning[203]: Found opcode in column 1. (MOVWF)
+000E   00A0           00061 MOVWF   COUNT                   ; Mueve W a la variable COUNT
+000F   2???           00062 LOOPC   CALL    DELAYP1         ; Llama a la subrutina de 0.1s
+Warning[203]: Found opcode in column 1. (DECFSZ)
+Message[305]: Using default destination of 1 (file).
+0010   0BA0           00063 DECFSZ  COUNT                   ; Decrementa COUNT y salta si llega a 0
+Warning[203]: Found opcode in column 1. (GOTO)
+0011   2???           00064 GOTO    LOOPC                   ; Si no ha llegado a 0, repite el bucle
+Warning[203]: Found opcode in column 1. (RETLW)
+0012   3400           00065 RETLW   0                       ; Regresa
+                      00066 
+                      00067 ; ==============================================================================
+                      00068 ; SECCIÓN DE CONFIGURACIÓN INICIAL DEL PIC
+                      00069 ; ==============================================================================
+0013   1683           00070 START   BSF     STATUS,5        ; Cambia a Bank 1 para acceder a los registros de configuración
+Warning[203]: Found opcode in column 1. (MOVLW)
+0014   30FF           00071 MOVLW   B'11111111'             ; Carga el valor binario a W
+Warning[203]: Found opcode in column 1. (MOVWF)
+0015   0085           00072 MOVWF   TRISA                   ; Mueve W a TRISA (todos los pines de PORTA como entrada)
+Warning[203]: Found opcode in column 1. (MOVLW)
+0016   3000           00073 MOVLW   B'00000000'             ; Carga el valor binario a W
+Warning[203]: Found opcode in column 1. (MOVWF)
+0017   0086           00074 MOVWF   TRISB                   ; Mueve W a TRISB (todos los pines de PORTB como salida)
+Warning[203]: Found opcode in column 1. (MOVLW)
+0018   3004           00075 MOVLW   B'00000100'             ; Carga el valor a W
+Warning[203]: Found opcode in column 1. (MOVWF)
+0019   0081           00076 MOVWF   OPTION_R                ; Mueve W a OPTION_R para configurar el prescaler a /32
+Warning[203]: Found opcode in column 1. (CLRF)
+001A   018E           00077 CLRF    PCON                    ; Selecciona el oscilador a 37kHz
+Warning[203]: Found opcode in column 1. (BCF)
+001B   1283           00078 BCF     STATUS,5                ; Vuelve a Bank 0
+Warning[203]: Found opcode in column 1. (CLRF)
+001C   0185           00079 CLRF    PORTA                   ; Limpia todos los pines del PORTA
+MPASM 5.87                     FLASH_LED.ASM   9-27-2025  15:09:41         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[203]: Found opcode in column 1. (CLRF)
+001D   0186           00080 CLRF    PORTB                   ; Limpia todos los pines del PORTB
+Warning[203]: Found opcode in column 1. (MOVLW)
+001E   3007           00081 MOVLW   .7                      ; Carga 7 a W
+Warning[203]: Found opcode in column 1. (MOVWF)
+001F   009F           00082 MOVWF   1FH                     ; Mueve W a CMCON para desactivar los comparadores
+                      00083 
+                      00084 ; ==============================================================================
+                      00085 ; PROGRAMA PRINCIPAL (Lógica del proyecto)
+                      00086 ; ==============================================================================
+0020   1406           00087 BEGIN   BSF     PORTB,0         ; Enciende el LED conectado a RB0
+0021   2???           00088         CALL    DELAYP5         ; Llama la subrutina de retardo de 0.5 segundos
+0022   1006           00089         BCF     PORTB,0         ; Apaga el LED
+0023   2???           00090         CALL    DELAYP5         ; Llama la subrutina de retardo de 0.5 segundos
+0024   2???           00091         GOTO    BEGIN           ; Repite el bucle del programa
+Warning[205]: Found directive in column 1. (END)
+3F10                  00092 END
+MPASM 5.87                     FLASH_LED.ASM   9-27-2025  15:09:41         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+BEGIN                             00000020
+CARRY                             00000000
+COUNT                             00000020
+DELAY1                            0000000D
+DELAYP1                           00000001
+DELAYP5                           00000007
+EEADR                             0000001B
+EECON1                            0000001C
+EECON2                            0000001D
+EEDATA                            0000001A
+LOOPA                             00000002
+LOOPB                             00000009
+LOOPC                             0000000F
+OPTION_R                          00000001
+PCON                              0000000E
+PORTA                             00000005
+PORTB                             00000006
+RD                                00000000
+START                             00000013
+STATUS                            00000003
+TMRO                              00000001
+TRISA                             00000005
+TRISB                             00000006
+WR                                00000001
+WREN                              00000002
+ZEROBIT                           00000002
+__16F628A                         00000001
+
+Errors   :     0
+Warnings :    29 reported,     0 suppressed
+Messages :     2 reported,     0 suppressed
+
+
