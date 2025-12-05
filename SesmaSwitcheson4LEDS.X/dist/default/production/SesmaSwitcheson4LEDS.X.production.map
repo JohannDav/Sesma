@@ -1,0 +1,54 @@
+MPLINK 5.09, LINKER
+Linker Map File - Created Wed Nov 26 10:31:23 2025
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000076
+                   .cinit    romdata   0x00003b    program   0x000004
+.config_2007_BUILD/DEFAULT/PRODUCTION/NEWASMT       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x00003c      
+                            0x002007    0x002007      
+            62 out of 2182 program addresses used, program memory utilization is 2%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+          BUCLE_PRINCIPAL   0x000033    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+             CHECK_BOTON2   0x000037    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+                 DELAY_5S   0x000026    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+           DELAY_5S_LOOP1   0x000028    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+           DELAY_5S_LOOP2   0x00002a    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+           DELAY_5S_LOOP3   0x00002c    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+           DELAY_DEBOUNCE   0x000021    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+      DELAY_DEBOUNCE_LOOP   0x000023    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+            SECUENCIA_DOS   0x000019    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+            SECUENCIA_UNO   0x00000a    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+                    START   0x000001    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    START   0x000001    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+            SECUENCIA_UNO   0x00000a    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+            SECUENCIA_DOS   0x000019    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+           DELAY_DEBOUNCE   0x000021    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+      DELAY_DEBOUNCE_LOOP   0x000023    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+                 DELAY_5S   0x000026    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+           DELAY_5S_LOOP1   0x000028    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+           DELAY_5S_LOOP2   0x00002a    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+           DELAY_5S_LOOP3   0x00002c    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+          BUCLE_PRINCIPAL   0x000033    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+             CHECK_BOTON2   0x000037    program     static C:\Users\jdqg2\MPLABXProjects\SesmaSwitcheson4LEDS.X\newAsmTemplate.asm
+
+

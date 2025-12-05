@@ -1,0 +1,432 @@
+MPASM 5.87                NEWASMTEMPLATE.ASM   11-26-2025  10:31:21         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; Quirino Gonzalez Johann David
+                      00002 ; Código para PIC16F628A - Secuencias de LEDs
+                      00003 
+                      00004 ; Definición de constantes
+  00000000            00005 BUTTON1  EQU     0       ; Botón 1 en RA0 (Secuencia 1)
+  00000001            00006 BUTTON2  EQU     1       ; Botón 2 en RA1 (Secuencia 2)
+  00000000            00007 LED1     EQU     0       ; LED 1 en RB0
+  00000001            00008 LED2     EQU     1       ; LED 2 en RB1
+  00000002            00009 LED3     EQU     2       ; LED 3 en RB2
+  00000003            00010 LED4     EQU     3       ; LED 4 en RB3
+                      00011 
+Warning[205]: Found directive in column 1. (LIST)
+                      00012 LIST    P=16F628A       ; Estamos usando el 16F628A
+                      00013 #include <P16F628A.INC> ; Incluir archivo de definiciones
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ; Build date : Jan 06 2020
+                      00005 ;  MPASM PIC16F628A processor include
+                      00006 ; 
+                      00007 ;  (c) Copyright 1999-2020 Microchip Technology, All rights reserved
+                      00008 ;==========================================================================
+                      00009 
+                      00386         LIST
+Warning[205]: Found directive in column 1. (__CONFIG)
+2007   3F81           00014 __CONFIG _CP_OFF & _WDT_OFF & _PWRTE_ON & _XT_OSC & _MCLRE_OFF & _BODEN_OFF
+                      00015 
+Warning[205]: Found directive in column 1. (ORG)
+                      00016 ORG     0               ; La dirección de inicio en memoria es 0
+Warning[203]: Found opcode in column 1. (GOTO)
+0000   2???           00017 GOTO    START           ; Ir a START
+                      00018 
+                      00019 ; ***************************************
+                      00020 ; El programa comienza ahora
+                      00021 ; ***************************************
+0001                  00022 START
+0001   1683           00023     BSF     STATUS, RP0 ; Seleccionar Banco 1
+0002   3003           00024     MOVLW   b'00000011' ; RA0 y RA1 como entradas, demás pines como salidas
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0003   0085           00025     MOVWF   TRISA       ; Configurar PORTA
+0004   3000           00026     MOVLW   b'00000000' ; Todos los pines como salidas
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0005   0086           00027     MOVWF   TRISB       ; Configurar PORTB
+0006   1283           00028     BCF     STATUS, RP0 ; Volver al Banco 0
+                      00029     
+                      00030     ; Configurar comparadores (necesario en 16F628A)
+0007   3007           00031     MOVLW   0x07
+0008   009F           00032     MOVWF   CMCON       ; Deshabilitar comparadores
+                      00033     
+                      00034     ; Inicializar PORTB - TODOS LOS LEDS APAGADOS
+0009   0186           00035     CLRF    PORTB       ; Limpiar PORTB (todos en 0)
+                      00036 
+                      00037 ; *** SECUENCIA 1 - SECUENCIAL ***
+MPASM 5.87                NEWASMTEMPLATE.ASM   11-26-2025  10:31:21         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000A                  00038 SECUENCIA_UNO
+                      00039     ; LED 1 (RB0)
+000A   1406           00040     BSF     PORTB, LED1     ; Enciende RB0
+000B   2???           00041     CALL    DELAY_5S        ; Retardo de 5 segundos
+000C   0186           00042     CLRF    PORTB           ; Apaga todos los LEDs
+                      00043     
+                      00044     ; LED 2 (RB1)
+000D   1486           00045     BSF     PORTB, LED2     ; Enciende RB1
+000E   2???           00046     CALL    DELAY_5S        ; Retardo de 5 segundos
+000F   0186           00047     CLRF    PORTB           ; Apaga todos los LEDs
+                      00048     
+                      00049     ; LED 3 (RB2)
+0010   1506           00050     BSF     PORTB, LED3     ; Enciende RB2
+0011   2???           00051     CALL    DELAY_5S        ; Retardo de 5 segundos
+0012   0186           00052     CLRF    PORTB           ; Apaga todos los LEDs
+                      00053     
+                      00054     ; LED 4 (RB3)
+0013   1586           00055     BSF     PORTB, LED4     ; Enciende RB3
+0014   2???           00056     CALL    DELAY_5S        ; Retardo de 5 segundos
+0015   0186           00057     CLRF    PORTB           ; Apaga todos los LEDs
+                      00058     
+                      00059     ; Comprobar el switch de nuevo antes de repetir
+0016   1805           00060     BTFSC   PORTA, BUTTON1  ; Salta si el bit 0 (RA0) es 1 (sigue presionado)
+0017   2???           00061     GOTO    BUCLE_PRINCIPAL ; Si no está presionado, vuelve al principal
+0018   2???           00062     GOTO    SECUENCIA_UNO   ; Si sigue presionado, repite la secuencia
+                      00063 
+                      00064 ; *** SECUENCIA 2 - SIMULTANEA ***
+0019                  00065 SECUENCIA_DOS
+                      00066     ; 1. Enciende todos los 4 LEDs (RB0-RB3)
+0019   300F           00067     MOVLW   b'00001111'     ; Carga el patrón de encendido
+001A   0086           00068     MOVWF   PORTB           ; Mueve el patrón a PORTB
+001B   2???           00069     CALL    DELAY_5S        ; Retardo de 5 segundos
+                      00070     
+                      00071     ; 2. Apaga todos los 4 LEDs
+001C   0186           00072     CLRF    PORTB           ; Apaga RB0-RB7
+001D   2???           00073     CALL    DELAY_5S        ; Retardo de 5 segundos
+                      00074     
+                      00075     ; Comprobar el switch de nuevo antes de repetir
+001E   1885           00076     BTFSC   PORTA, BUTTON2  ; Salta si el bit 1 (RA1) es 1 (sigue presionado)
+001F   2???           00077     GOTO    BUCLE_PRINCIPAL ; Si no está presionado, vuelve al principal
+0020   2???           00078     GOTO    SECUENCIA_DOS   ; Si sigue presionado, repite la secuencia
+                      00079 
+                      00080 ; *** Retardo para debounce ***
+0021                  00081 DELAY_DEBOUNCE
+0021   3064           00082     MOVLW   .100
+0022   00A0           00083     MOVWF   0x20
+0023                  00084 DELAY_DEBOUNCE_LOOP
+0023   0BA0           00085     DECFSZ  0x20, F
+0024   2???           00086     GOTO    DELAY_DEBOUNCE_LOOP
+0025   0008           00087     RETURN
+                      00088 
+                      00089 ; *** Retardo de 5 segundos ***
+0026                  00090 DELAY_5S
+MPASM 5.87                NEWASMTEMPLATE.ASM   11-26-2025  10:31:21         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0026   3032           00091     MOVLW   .50             ; Contador externo
+0027   00A1           00092     MOVWF   0x21
+0028                  00093 DELAY_5S_LOOP1
+0028   30C8           00094     MOVLW   .200            ; Contador medio
+0029   00A2           00095     MOVWF   0x22
+002A                  00096 DELAY_5S_LOOP2
+002A   30FA           00097     MOVLW   .250            ; Contador interno
+002B   00A3           00098     MOVWF   0x23
+002C                  00099 DELAY_5S_LOOP3
+002C   0BA3           00100     DECFSZ  0x23, F
+002D   2???           00101     GOTO    DELAY_5S_LOOP3
+002E   0BA2           00102     DECFSZ  0x22, F
+002F   2???           00103     GOTO    DELAY_5S_LOOP2
+0030   0BA1           00104     DECFSZ  0x21, F
+0031   2???           00105     GOTO    DELAY_5S_LOOP1
+0032   0008           00106     RETURN
+                      00107 
+                      00108 ; *** BUCLE PRINCIPAL - AL FINAL DEL CÓDIGO ***
+0033                  00109 BUCLE_PRINCIPAL
+                      00110     ; Verificar botón 1 (RA0) para Secuencia 1
+0033   1805           00111     BTFSC   PORTA, BUTTON1  ; Salta si RA0 es 1 (no presionado)
+0034   2???           00112     GOTO    CHECK_BOTON2    ; No presionado, verificar botón 2
+                      00113     
+                      00114     ; Botón 1 presionado - ejecutar SECUENCIA UNO
+0035   2???           00115     CALL    DELAY_DEBOUNCE  ; Esperar por debounce
+0036   2???           00116     GOTO    SECUENCIA_UNO   ; Ir a secuencia 1
+                      00117 
+0037                  00118 CHECK_BOTON2
+                      00119     ; Verificar botón 2 (RA1) para Secuencia 2
+0037   1885           00120     BTFSC   PORTA, BUTTON2  ; Salta si RA1 es 1 (no presionado)
+0038   2???           00121     GOTO    BUCLE_PRINCIPAL ; No presionado, volver al bucle principal
+                      00122     
+                      00123     ; Botón 2 presionado - ejecutar SECUENCIA DOS
+0039   2???           00124     CALL    DELAY_DEBOUNCE  ; Esperar por debounce
+003A   2???           00125     GOTO    SECUENCIA_DOS   ; Ir a secuencia 2
+                      00126 
+Warning[205]: Found directive in column 1. (END)
+3F81                  00127 END                     ; Fin del código fuente
+MPASM 5.87                NEWASMTEMPLATE.ASM   11-26-2025  10:31:21         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADDEN                             00000003
+ADEN                              00000003
+BRGH                              00000002
+BUCLE_PRINCIPAL                   00000033
+BUTTON1                           00000000
+BUTTON2                           00000001
+C                                 00000000
+C1INV                             00000004
+C1OUT                             00000006
+C2INV                             00000005
+C2OUT                             00000007
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCPR1                             00000015
+CCPR1H                            00000016
+CCPR1L                            00000015
+CHECK_BOTON2                      00000037
+CIS                               00000003
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             0000001F
+CMIE                              00000006
+CMIF                              00000006
+CREN                              00000004
+CSRC                              00000007
+DATA_CP_OFF                       00003FFF
+DATA_CP_ON                        00003EFF
+DC                                00000001
+DELAY_5S                          00000026
+DELAY_5S_LOOP1                    00000028
+DELAY_5S_LOOP2                    0000002A
+DELAY_5S_LOOP3                    0000002C
+DELAY_DEBOUNCE                    00000021
+DELAY_DEBOUNCE_LOOP               00000023
+EEADR                             0000009B
+EECON1                            0000009C
+EECON2                            0000009D
+EEDATA                            0000009A
+EEIE                              00000007
+EEIF                              00000007
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GIE                               00000007
+INDF                              00000000
+MPASM 5.87                NEWASMTEMPLATE.ASM   11-26-2025  10:31:21         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+LED1                              00000000
+LED2                              00000001
+LED3                              00000002
+LED4                              00000003
+NOT_BO                            00000000
+NOT_BOD                           00000000
+NOT_BOR                           00000000
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+OERR                              00000001
+OPTION_REG                        00000081
+OSCF                              00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PORTA                             00000005
+PORTB                             00000006
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RA6                               00000006
+RA7                               00000007
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RCIE                              00000005
+RCIF                              00000005
+MPASM 5.87                NEWASMTEMPLATE.ASM   11-26-2025  10:31:21         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+RX9                               00000006
+RX9D                              00000000
+SECUENCIA_DOS                     00000019
+SECUENCIA_UNO                     0000000A
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+START                             00000001
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1OSCEN                           00000003
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
+TRISA6                            00000006
+TRISA7                            00000007
+MPASM 5.87                NEWASMTEMPLATE.ASM   11-26-2025  10:31:21         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+TRMT                              00000001
+TX9                               00000006
+TX9D                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+VR0                               00000000
+VR1                               00000001
+VR2                               00000002
+VR3                               00000003
+VRCON                             0000009F
+VREN                              00000007
+VROE                              00000006
+VRR                               00000005
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_OFF                           00003FFF
+_CP_ON                            00001FFF
+_DEVID1                           00002006
+_ER_OSC_CLKOUT                    00003FFF
+_ER_OSC_NOCLKOUT                  00003FFE
+_EXTCLK_OSC                       00003FEF
+_FOSC_ECIO                        00003FEF
+_FOSC_EXTRCCLK                    00003FFF
+_FOSC_EXTRCIO                     00003FFE
+_FOSC_HS                          00003FEE
+_FOSC_INTOSCCLK                   00003FFD
+_FOSC_INTOSCIO                    00003FFC
+_FOSC_LP                          00003FEC
+_FOSC_XT                          00003FED
+_HS_OSC                           00003FEE
+_IDLOC0                           00002000
+MPASM 5.87                NEWASMTEMPLATE.ASM   11-26-2025  10:31:21         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_INTOSC_OSC_CLKOUT                00003FFD
+_INTOSC_OSC_NOCLKOUT              00003FFC
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FEC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_MCLRE_OFF                        00003FDF
+_MCLRE_ON                         00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC_CLKOUT                    00003FFF
+_RC_OSC_NOCLKOUT                  00003FFE
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FED
+__16F628A                         00000001
+
+Errors   :     0
+Warnings :     5 reported,     0 suppressed
+Messages :     2 reported,     0 suppressed
+
+
